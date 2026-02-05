@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard - Sankalp Shiksha</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .dashboard-container {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            min-height: 100vh;
+            background: #f5f7fa;
+        }
+        
+        .sidebar {
+            background: white;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+            padding: 20px 0;
+        }
+        
+        .user-profile {
+            text-align: center;
+            padding: 20px;
+            border-bottom: 1px solid #dee2e6;
+        }
+        
+        .user-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #2a8bf2, #1a6fc4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+            margin: 0 auto 15px;
+        }
+        
+        .sidebar-menu {
+            padding: 20px 0;
+        }
+        
+        .menu-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 15px 25px;
+            color: #333;
+            text-decoration: none;
+            transition: all 0.3s;
+            border-left: 4px solid transparent;
+        }
+        
+        .menu-item:hover, .menu-item.active {
+            background: rgba(42, 139, 242, 0.1);
+            color: #2a8bf2;
+            border-left-color: #2a8bf2;
+        }
+        
+        .menu-item i {
+            width: 20px;
+        }
+        
+        .main-content {
+            padding: 20px;
+            overflow-y: auto;
+        }
+        
+        .welcome-banner {
+            background: linear-gradient(135deg, #2a8bf2, #1a6fc4);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 10px;
+            background: rgba(42, 139, 242, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #2a8bf2;
+            font-size: 24px;
+        }
+        
+        .stat-info h3 {
+            margin: 0 0 5px 0;
+            font-size: 24px;
+        }
+        
+        .stat-info p {
+            margin: 0;
+            color: #666;
+        }
+        
+        .upcoming-exams {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+        
+        .exam-card {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            border: 1px solid #dee2e6;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            transition: all 0.3s;
+        }
+        
+        .exam-card:hover {
+            border-color: #2a8bf2;
+            box-shadow: 0 5px 15px rgba(42, 139, 242, 0.1);
+        }
+        
+        .exam-info h4 {
+            margin: 0 0 10px 0;
+        }
+        
+        .exam-details {
+            display: flex;
+            gap: 20px;
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .exam-details span {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .performance-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+        
+        .performance-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+        
+        .chart-placeholder {
+            height: 200px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 20px 0;
+            color: #666;
+        }
+        
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        
+        .action-btn {
+            background: white;
+            border: 2px solid #dee2e6;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s;
+            cursor: pointer;
+            text-decoration: none;
+            color: #333;
+        }
+        
+        .action-btn:hover {
+            border-color: #2a8bf2;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(42, 139, 242, 0.1);
+        }
+        
+        .action-btn i {
+            font-size: 30px;
+            color: #2a8bf2;
+            margin-bottom: 10px;
+        }
+        
+        .mobile-menu-toggle {
+            display: none;
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+            background: #2a8bf2;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 10px;
+            cursor: pointer;
+        }
+        
+        @media (max-width: 768px) {
+            .dashboard-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar {
+                position: fixed;
+                left: -250px;
+                top: 0;
+                height: 100vh;
+                z-index: 999;
+                transition: left 0.3s;
+            }
+            
+            .sidebar.active {
+                left: 0;
+            }
+            
+            .mobile-menu-toggle {
+                display: block;
+            }
+            
+            .main-content {
+                padding-top: 70px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <button class="mobile-menu-toggle" id="menuToggle">
+            <i class="fas fa-bars"></i>
+        </button>
+        
+        <!-- Sidebar -->
+        <div class="sidebar" id="sidebar">
+            <div class="user-profile">
+                <div class="user-avatar" id="userAvatar">RS</div>
+                <h3 id="userName">Rahul Sharma</h3>
+                <p>Class 10 Student</p>
+            </div>
+            
+            <div class="sidebar-menu">
+                <a href="#" class="menu-item active">
+                    <i class="fas fa-home"></i> Dashboard
+                </a>
+                <a href="#" class="menu-item">
+                    <i class="fas fa-book"></i> My Subjects
+                </a>
+                <a href="#" class="menu-item">
+                    <i class="fas fa-clipboard-list"></i> Exams
+                </a>
+                <a href="#" class="menu-item">
+                    <i class="fas fa-chart-line"></i> Performance
+                </a>
+                <a href="#" class="menu-item">
+                    <i class="fas fa-calendar-alt"></i> Schedule
+                </a>
+                <a href="#" class="menu-item">
+                    <i class="fas fa-download"></i> Downloads
+                </a>
+                <a href="#" class="menu-item">
+                    <i class="fas fa-cog"></i> Settings
+                </a>
+                <a href="#" class="menu-item" id="logoutBtn">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </a>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Welcome Banner -->
+            <div class="welcome-banner">
+                <h1>Welcome back, Rahul!</h1>
+                <p>You have 2 upcoming exams and 5 pending assignments</p>
+            </div>
+            
+            <!-- Stats Grid -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-clipboard-check"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>24</h3>
+                        <p>Exams Completed</p>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-chart-bar"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>85%</h3>
+                        <p>Average Score</p>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-medal"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>3</h3>
+                        <p>Achievements</p>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>12h</h3>
+                        <p>Study Time</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Upcoming Exams -->
+            <div class="upcoming-exams">
+                <h2>Upcoming Exams</h2>
+                <div class="exam-list" id="upcomingExams">
+                    <!-- Exams will be loaded here -->
+                </div>
+            </div>
+            
+            <!-- Performance Section -->
+            <div class="performance-section">
+                <div class="performance-card">
+                    <h3>Subject-wise Performance</h3>
+                    <div class="chart-placeholder">
+                        <i class="fas fa-chart-pie"></i> Performance Chart
+                    </div>
+                </div>
+                
+                <div class="performance-card">
+                    <h3>Recent Scores</h3>
+                    <div class="chart-placeholder">
+                        <i class="fas fa-chart-line"></i> Progress Chart
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Quick Actions -->
+            <div class="quick-actions">
+                <a href="#" class="action-btn" id="startPractice">
+                    <i class="fas fa-play-circle"></i>
+                    <h4>Start Practice</h4>
+                    <p>Practice questions by topic</p>
+                </a>
+                
+                <a href="#" class="action-btn" id="viewResults">
+                    <i class="fas fa-file-alt"></i>
+                    <h4>View Results</h4>
+                    <p>Check previous exam results</p>
+                </a>
+                
+                <a href="#" class="action-btn" id="downloadMaterials">
+                    <i class="fas fa-download"></i>
+                    <h4>Study Materials</h4>
+                    <p>Download PDFs and notes</p>
+                </a>
+                
+                <a href="#" class="action-btn" id="askDoubt">
+                    <i class="fas fa-question-circle"></i>
+                    <h4>Ask Doubt</h4>
+                    <p>Get help from teachers</p>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/auth.js"></script>
+    <script src="js/student.js"></script>
+    <script>
+        // Mobile menu toggle
+        document.getElementById('menuToggle').addEventListener('click', function() {
+            document.getElementById('sidebar').classList.toggle('active');
+        });
+        
+        // Load user data
+        document.addEventListener('DOMContentLoaded', function() {
+            const user = window.AuthSystem.currentUser;
+            if (user) {
+                document.getElementById('userName').textContent = user.name;
+                document.getElementById('userAvatar').textContent = user.avatar || 
+                    user.name.split(' ').map(n => n[0]).join('');
+                
+                if (user.role !== 'student') {
+                    window.location.href = 'login.html';
+                }
+            } else {
+                window.location.href = 'login.html';
+            }
+        });
+        
+        // Logout
+        document.getElementById('logoutBtn').addEventListener('click', function(e) {
+            e.preventDefault();
+            window.AuthSystem.logout();
+        });
+    </script>
+</body>
+</html>
