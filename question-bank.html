@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Question Bank - Sankalp Shiksha</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .question-bank-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .bank-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .search-filter {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+        }
+        
+        .search-box {
+            flex: 1;
+            min-width: 300px;
+        }
+        
+        .filter-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .stats-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            text-align: center;
+            border-top: 5px solid;
+        }
+        
+        .stat-math { border-color: #3498db; }
+        .stat-science { border-color: #2ecc71; }
+        .stat-english { border-color: #e74c3c; }
+        .stat-hindi { border-color: #f39c12; }
+        
+        .questions-grid {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 30px;
+            min-height: 600px;
+        }
+        
+        .categories-sidebar {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            max-height: 600px;
+            overflow-y: auto;
+        }
+        
+        .category-item {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-left: 4px solid transparent;
+        }
+        
+        .category-item:hover, .category-item.active {
+            background: rgba(42, 139, 242, 0.05);
+            border-left-color: #2a8bf2;
+        }
+        
+        .questions-list {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            max-height: 600px;
+            overflow-y: auto;
+        }
+        
+        .question-item {
+            padding: 20px;
+            border: 1px solid #dee2e6;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            transition: all 0.3s;
+        }
+        
+        .question-item:hover {
+            border-color: #2a8bf2;
+            box-shadow: 0 5px 15px rgba(42, 139, 242, 0.1);
+        }
+        
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+        
+        .question-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .options-list {
+            margin-left: 20px;
+            margin-top: 10px;
+        }
+        
+        .option-item {
+            padding: 5px 0;
+        }
+        
+        .option-item.correct {
+            color: #28a745;
+            font-weight: 600;
+        }
+        
+        .explanation {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            border-left: 4px solid #2a8bf2;
+        }
+        
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 30px;
+        }
+        
+        .page-btn {
+            padding: 8px 15px;
+            border: 1px solid #dee2e6;
+            background: white;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        .page-btn.active {
+            background: #2a8bf2;
+            color: white;
+            border-color: #2a8bf2;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            max-width: 700px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .question-type-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .type-option {
+            padding: 20px;
+            border: 2px solid #dee2e6;
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .type-option:hover, .type-option.active {
+            border-color: #2a8bf2;
+            background: rgba(42, 139, 242, 0.05);
+        }
+        
+        @media (max-width: 992px) {
+            .questions-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .categories-sidebar {
+                max-height: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <i class="fas fa-graduation-cap"></i>
+                <span>Sankalp Shiksha</span>
+            </div>
+            <div class="nav-menu">
+                <a href="teacher-dashboard.html" class="nav-link">Dashboard</a>
+                <a href="create-exam.html" class="nav-link">Create Exam</a>
+                <a href="question-bank.html" class="nav-link active">Question Bank</a>
+                <a href="#" class="nav-link">Results</a>
+                <a href="#" class="btn btn-outline" data-logout>Logout</a>
+            </div>
+        </div>
+    </nav>
+    
+    <div class="question-bank-container">
+        <div class="bank-header">
+            <h1>Question Bank</h1>
+            <div>
+                <button class="btn btn-outline" id="importQuestions">
+                    <i class="fas fa-file-import"></i> Import
+                </button>
+                <button class="btn btn-primary" id="addQuestion">
+                    <i class="fas fa-plus"></i> Add Question
+                </button>
+                <button class="btn btn-success" id="exportQuestions">
+                    <i class="fas fa-file-export"></i> Export
+                </button>
+            </div>
+        </div>
+        
+        <div class="search-filter">
+            <div class="search-box">
+                <input type="text" class="form-control" id="searchInput" 
+                       placeholder="Search questions...">
+            </div>
+            <div class="filter-group">
+                <select class="form-control" id="filterSubject" style="width: 150px;">
+                    <option value="">All Subjects</option>
+                    <option value="mathematics">Mathematics</option>
+                    <option value="science">Science</option>
+                    <option value="english">English</option>
+                    <option value="hindi">Hindi</option>
+                </select>
+                
+                <select class="form-control" id="filterType" style="width: 150px;">
+                    <option value="">All Types</option>
+                    <option value="mcq">Multiple Choice</option>
+                    <option value="true_false">True/False</option>
+                    <option value="fill_blank">Fill in Blank</option>
+                    <option value="descriptive">Descriptive</option>
+                </select>
+                
+                <select class="form-control" id="filterDifficulty" style="width: 150px;">
+                    <option value="">All Difficulty</option>
+                    <option value="easy">Easy</option>
+                    <option value="medium">Medium</option>
+                    <option value="hard">Hard</option>
+                </select>
+                
+                <button class="btn btn-outline" id="clearFilters">
+                    <i class="fas fa-times"></i> Clear
+                </button>
+            </div>
+        </div>
+        
+        <div class="stats-cards">
+            <div class="stat-card stat-math">
+                <h3 id="mathCount">0</h3>
+                <p>Mathematics Questions</p>
+            </div>
+            <div class="stat-card stat-science">
+                <h3 id="scienceCount">0</h3>
+                <p>Science Questions</p>
+            </div>
+            <div class="stat-card stat-english">
+                <h3 id="englishCount">0</h3>
+                <p>English Questions</p>
+            </div>
+            <div class="stat-card stat-hindi">
+                <h3 id="hindiCount">0</h3>
+                <p>Hindi Questions</p>
+            </div>
+        </div>
+        
+        <div class="questions-grid">
+            <div class="categories-sidebar">
+                <h3>Categories</h3>
+                <div id="categoriesList">
+                    <!-- Categories loaded dynamically -->
+                </div>
+            </div>
+            
+            <div class="questions-list">
+                <div id="questionsContainer">
+                    <!-- Questions loaded dynamically -->
+                </div>
+                
+                <div class="pagination" id="pagination">
+                    <!-- Pagination buttons -->
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Add Question Modal -->
+    <div class="modal" id="addQuestionModal">
+        <div class="modal-content">
+            <h2>Add New Question</h2>
+            <form id="questionForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Question Type</label>
+                        <div class="question-type-grid" id="questionTypes">
+                            <!-- Types loaded from JS -->
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Subject</label>
+                        <select class="form-control" id="questionSubject" required>
+                            <option value="">Select Subject</option>
+                            <option value="mathematics">Mathematics</option>
+                            <option value="science">Science</option>
+                            <option value="english">English</option>
+                            <option value="hindi">Hindi</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Topic</label>
+                        <input type="text" class="form-control" id="questionTopic" 
+                               placeholder="e.g., Algebra, Physics, Grammar" required>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Difficulty</label>
+                        <select class="form-control" id="questionDifficulty" required>
+                            <option value="easy">Easy</option>
+                            <option value="medium">Medium</option>
+                            <option value="hard">Hard</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Marks</label>
+                        <input type="number" class="form-control" id="questionMarks" 
+                               min="1" max="10" value="1" required>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Question Text</label>
+                    <textarea class="form-control" id="questionText" rows="3" required
+                              placeholder="Enter your question here..."></textarea>
+                </div>
+                
+                <!-- MCQ Options -->
+                <div id="mcqOptions" style="display: none;">
+                    <div class="form-group">
+                        <label>Options (Mark correct answer)</label>
+                        <div id="optionsContainer">
+                            <div class="option-row" style="display: flex; gap: 10px; margin-bottom: 10px;">
+                                <input type="radio" name="correctOption" value="0">
+                                <input type="text" class="form-control option-input" 
+                                       placeholder="Option A" data-index="0">
+                                <button type="button" class="btn btn-danger btn-sm remove-option">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-outline btn-sm" id="addOption">
+                            <i class="fas fa-plus"></i> Add Option
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- True/False Options -->
+                <div id="trueFalseOptions" style="display: none;">
+                    <div class="form-group">
+                        <label>Correct Answer</label>
+                        <select class="form-control" id="tfAnswer">
+                            <option value="true">True</option>
+                            <option value="false">False</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <!-- Explanation -->
+                <div class="form-group">
+                    <label>Explanation (Optional)</label>
+                    <textarea class="form-control" id="questionExplanation" rows="2"
+                              placeholder="Add explanation for the answer..."></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label>Tags (comma separated)</label>
+                    <input type="text" class="form-control" id="questionTags" 
+                           placeholder="e.g., algebra, equations, math">
+                </div>
+                
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary">Save Question</button>
+                    <button type="button" class="btn btn-outline" id="closeModal">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/auth.js"></script>
+    <script src="js/question-set.js"></script>
+    <script>
+        let currentQuestions = [];
+        let currentPage = 1;
+        const questionsPerPage = 10;
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            const user = window.AuthSystem.currentUser;
+            if (!user || (user.role !== 'teacher' && user.role !== 'admin')) {
+                window.location.href = 'login.html';
+            }
+            
+            loadQuestionTypes();
+            loadCategories();
+            loadQuestions();
+            updateStats();
+            
+            // Search functionality
+            document.getElementById('searchInput').addEventListener('input', function() {
+                currentPage = 1;
+                loadQuestions();
+            });
+            
+            // Filter functionality
+            document.getElementById('filterSubject').addEventListener('change', loadQuestions);
+            document.getElementById('filterType').addEventListener('change', loadQuestions);
+            document.getElementById('filterDifficulty').addEventListener('change', loadQuestions);
+            document.getElementById('clearFilters').addEventListener('click', clearFilters);
+            
+            // Add question modal
+            document.getElementById('addQuestion').addEventListener('click', function() {
+                showAddQuestionModal();
+            });
+            
+            document.getElementById('closeModal').addEventListener('click', function() {
+                document.getElementById('addQuestionModal').style.display = 'none';
+            });
+            
+            // Close modal on outside click
+            document.getElementById('addQuestionModal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    this.style.display = 'none';
+                }
+            });
+            
+            // Export questions
+            document.getElementById('exportQuestions').addEventListener('click', function() {
+                exportQuestions();
+            });
+        });
+        
+        function loadQuestionTypes() {
+            const typesContainer = document.getElementById('questionTypes');
+            const types = window.QuestionDatabase.questionTypes;
+            
+            Object.keys(types).forEach(typeKey => {
+                const div = document.createElement('div');
+                div.className = 'type-option';
+                div.dataset.type = typeKey;
+                div.innerHTML = `
+                    <i class="fas ${getTypeIcon(typeKey)}"></i>
+                    <div style="margin-top: 5px;">${types[typeKey]}</div>
+                `;
+                div.addEventListener('click', function() {
+                    document.querySelectorAll('.type-option').forEach(opt => {
+                        opt.classList.remove('active');
+                    });
+                    this.classList.add('active');
+                    showQuestionTypeFields(typeKey);
+                });
+                typesContainer.appendChild(div);
+            });
+        }
+        
+        function getTypeIcon(type) {
+            const icons = {
+                mcq: 'fa-list-ul',
+                true_false: 'fa-check-circle',
+                fill_blank: 'fa-edit',
+                descriptive: 'fa-align-left',
+                match: 'fa-random',
+                arrange: 'fa-sort-amount-down'
+            };
+            return icons[type] || 'fa-question-circle';
+        }
+        
+        function showQuestionTypeFields(type) {
+            // Hide all option sections
+            document.getElementById('mcqOptions').style.display = 'none';
+            document.getElementById('trueFalseOptions').style.display = 'none';
+            
+            // Show relevant section
+            if (type === 'mcq') {
+                document.getElementById('mcqOptions').style.display = 'block';
+            } else if (type === 'true_false') {
+                document.getElementById('trueFalseOptions').style.display = 'block';
+            }
+        }
+        
+        function loadCategories() {
+            const categoriesList = document.getElementById('categoriesList');
+            const subjects = window.QuestionDatabase.subjects;
+            
+            // Add "All" category
+            const allDiv = document.createElement('div');
+            allDiv.className = 'category-item active';
+            allDiv.textContent = 'All Questions';
+            allDiv.dataset.subject = 'all';
+            allDiv.addEventListener('click', function() {
+                document.querySelectorAll('.category-item').forEach(item => {
+                    item.classList.remove('active');
+                });
+                this.classList.add('active');
+                document.getElementById('filterSubject').value = '';
+                loadQuestions();
+            });
+            categoriesList.appendChild(allDiv);
+            
+            // Add subject categories
+            Object.keys(subjects).forEach(subjectKey => {
+                const subject = subjects[subjectKey];
+                const div = document.createElement('div');
+                div.className = 'category-item';
+                div.innerHTML = `
+                    <div style="font-weight: 600;">${subject.name}</div>
+                    <div style="font-size: 12px; color: #666;">${subject.description}</div>
+                `;
+                div.dataset.subject = subjectKey;
+                div.addEventListener('click', function() {
+                    document.querySelectorAll('.category-item').forEach(item => {
+                        item.classList.remove('active');
+                    });
+                    this.classList.add('active');
+                    document.getElementById('filterSubject').value = subjectKey;
+                    loadQuestions();
+                });
+                categoriesList.appendChild(div);
+            });
+        }
+        
+        function loadQuestions() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const subjectFilter = document.getElementById('filterSubject').value;
+            const typeFilter = document.getElementById('filterType').value;
+            const difficultyFilter = document.getElementById('filterDifficulty').value;
+            
+            let questions = window.QuestionDatabase.questions;
+            
+            // Apply filters
+            if (searchTerm) {
+                questions = questions.filter(q => 
+                    q.question.toLowerCase().includes(searchTerm) ||
+                    q.topic.toLowerCase().includes(searchTerm) ||
+                    q.tags?.some(tag => tag.toLowerCase().includes(searchTerm))
+                );
+            }
+            
+            if (subjectFilter) {
+                questions = questions.filter(q => q.subject === subjectFilter);
+            }
+            
+            if (typeFilter) {
+                questions = questions.filter(q => q.type === typeFilter);
+            }
+            
+            if (difficultyFilter) {
+                questions = questions.filter(q => q.difficulty === difficultyFilter);
+            }
+            
+            currentQuestions = questions;
+            renderQuestions();
+            renderPagination();
+        }
+        
+        function renderQuestions() {
+            const container = document.getElementById('questionsContainer');
+            container.innerHTML = '';
+            
+            const startIndex = (currentPage - 1) * questionsPerPage;
+            const endIndex = Math.min(startIndex + questionsPerPage, currentQuestions.length);
+            const pageQuestions = currentQuestions.slice(startIndex, endIndex);
+            
+            if (pageQuestions.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 50px; color: #666;">
+                        <i class="fas fa-search" style="font-size: 48px; margin-bottom: 20px;"></i>
+                        <h3>No questions found</h3>
+                        <p>Try changing your search criteria or add new questions.</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            pageQuestions.forEach((question, index) => {
+                const item = document.createElement('div');
+                item.className = 'question-item';
+                item.innerHTML = createQuestionHTML(question, startIndex + index + 1);
+                container.appendChild(item);
+            });
+        }
+        
+        function createQuestionHTML(question, number) {
+            let optionsHTML = '';
+            if (question.type === 'mcq' && question.options) {
+                optionsHTML = `
+                    <div class="options-list">
+                        ${question.options.map((option, idx) => `
+                            <div class="option-item ${option === question.correctAnswer ? 'correct' : ''}">
+                                ${String.fromCharCode(65 + idx)}. ${option}
+                                ${option === question.correctAnswer ? ' ✓' : ''}
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            }
+            
+            let explanationHTML = '';
+            if (question.explanation) {
+                explanationHTML = `
+                    <div class="explanation">
+                        <strong>Explanation:</strong> ${question.explanation}
+                    </div>
+                `;
+            }
+            
+            return `
+                <div class="question-header">
+                    <div>
+                        <strong>Q${number}. ${question.question}</strong>
+                        <div style="display: flex; gap: 10px; margin-top: 5px;">
+                            <span class="badge badge-primary">${question.subject}</span>
+                            <span class="badge badge-${question.difficulty}">${question.difficulty}</span>
+                            <span class="badge badge-secondary">${question.type}</span>
+                            <span class="badge badge-warning">${question.marks} marks</span>
+                            <span class="badge badge-light">${question.topic}</span>
+                        </div>
+                    </div>
+                    <div class="question-actions">
+                        <button class="btn btn-sm btn-edit" onclick="editQuestion('${question.id}')">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-sm btn-danger" onclick="deleteQuestion('${question.id}')">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+                ${optionsHTML}
+                ${explanationHTML}
+                <div style="margin-top: 10px; font-size: 12px; color: #666;">
+                    ID: ${question.id} | Created: ${question.createdAt}
+                </div>
+            `;
+        }
+        
+        function renderPagination() {
+            const pagination = document.getElementById('pagination');
+            pagination.innerHTML = '';
+            
+            const totalPages = Math.ceil(currentQuestions.length / questionsPerPage);
+            
+            if (totalPages <= 1) return;
+            
+            // Previous button
+            if (currentPage > 1) {
+                const prevBtn = document.createElement('button');
+                prevBtn.className = 'page-btn';
+                prevBtn.innerHTML = '<i class="fas fa-chevron-left"></i>';
+                prevBtn.addEventListener('click', () => {
+                    currentPage--;
+                    loadQuestions();
+                });
+                pagination.appendChild(prevBtn);
+            }
+            
+            // Page numbers
+            for (let i = 1; i <= totalPages; i++) {
+                const pageBtn = document.createElement('button');
+                pageBtn.className = `page-btn ${i === currentPage ? 'active' : ''}`;
+                pageBtn.textContent = i;
+                pageBtn.addEventListener('click', () => {
+                    currentPage = i;
+                    loadQuestions();
+                });
+                pagination.appendChild(pageBtn);
+            }
+            
+            // Next button
+            if (currentPage < totalPages) {
+                const nextBtn = document.createElement('button');
+                nextBtn.className = 'page-btn';
+                nextBtn.innerHTML = '<i class="fas fa-chevron-right"></i>';
+                nextBtn.addEventListener('click', () => {
+                    currentPage++;
+                    loadQuestions();
+                });
+                pagination.appendChild(nextBtn);
+            }
+        }
+        
+        function clearFilters() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('filterSubject').value = '';
+            document.getElementById('filterType').value = '';
+            document.getElementById('filterDifficulty').value = '';
+            loadQuestions();
+        }
+        
+        function updateStats() {
+            const stats = window.QuestionDatabase.getStatistics();
+            document.getElementById('mathCount').textContent = stats.bySubject.mathematics || 0;
+            document.getElementById('scienceCount').textContent = stats.bySubject.science || 0;
+            document.getElementById('englishCount').textContent = stats.bySubject.english || 0;
+            document.getElementById('hindiCount').textContent = stats.bySubject.hindi || 0;
+        }
+        
+        function showAddQuestionModal() {
+            document.getElementById('addQuestionModal').style.display = 'flex';
+            document.getElementById('questionForm').reset();
+            document.querySelectorAll('.type-option').forEach(opt => {
+                opt.classList.remove('active');
+            });
+            document.getElementById('mcqOptions').style.display = 'none';
+            document.getElementById('trueFalseOptions').style.display = 'none';
+        }
+        
+        function exportQuestions() {
+            const data = window.QuestionDatabase.exportQuestions('json');
+            const blob = new Blob([data], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `question-bank-${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+        
+        function editQuestion(questionId) {
+            // Implementation for editing question
+            alert('Edit feature coming soon!');
+        }
+        
+        function deleteQuestion(questionId) {
+            if (confirm('Are you sure you want to delete this question?')) {
+                const index = window.QuestionDatabase.questions.findIndex(q => q.id === questionId);
+                if (index !== -1) {
+                    window.QuestionDatabase.questions.splice(index, 1);
+                    window.QuestionDatabase.saveToLocalStorage();
+                    loadQuestions();
+                    updateStats();
+                }
+            }
+        }
+    </script>
+</body>
+</html>
